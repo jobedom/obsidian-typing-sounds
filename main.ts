@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS: TypingSoundsPluginSettings = {
 
 function getPluginFilePath(plugin: Plugin, filename: string) {
   return plugin.app.vault.adapter.getResourcePath(
-    join(plugin.app.vault.configDir, "plugins", plugin.manifest.id, filename)
+    join(plugin.app.vault.configDir, "plugins", `obsidian-${plugin.manifest.id}`, filename)
   );
 }
 
