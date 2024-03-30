@@ -26,7 +26,7 @@ jobs:
     - name: Package
       run: |
         mkdir ${{ github.event.repository.name }}
-        cp main.js manifest.json README.md ${{ github.event.repository.name }}
+        cp main.js manifest.json README.md sounds/key.wav sounds/enter.wav ${{ github.event.repository.name }}
         zip -r ${{ github.event.repository.name }}.zip ${{ github.event.repository.name }}
 
     - name: Create release
@@ -63,6 +63,28 @@ jobs:
         asset_name: main.js
         asset_content_type: text/javascript
     
+    - name: Upload key.wav
+      id: upload-key-wav
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: ./sounds/key.wav
+        asset_name: key.wav
+        asset_content_type: text/javascript
+    
+    - name: Upload enter.wav
+      id: upload-enter-wav
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: ./sounds/enter.wav
+        asset_name: enter.wav
+        asset_content_type: text/javascript
+        
     - name: Upload manifest.json
       id: upload-manifest
       uses: actions/upload-release-asset@v1
