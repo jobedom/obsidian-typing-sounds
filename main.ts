@@ -9,7 +9,7 @@ interface TypingSoundsPluginSettings {
 const SOUND_RELATIVE_PATH = "sounds";
 
 const AUDIO_PLAYER_COUNT = 10; // To avoid choking sounds by quick typists
-const AUDIO_PITCH_VARIATION = 0.025; // Very slightly change pitch of sounds
+const AUDIO_PITCH_VARIATION = 0.05; // Very slightly change pitch of sounds
 
 const DEFAULT_SETTINGS: TypingSoundsPluginSettings = {
   muted: false,
@@ -22,8 +22,37 @@ function getPluginFilePath(plugin: Plugin, filename: string) {
   );
 }
 
-function getRandomPlaybackRate() {
-  return 1.0 + AUDIO_PITCH_VARIATION * (2.0 * Math.random() - 1.0);
+class SeedableRandomGenerator {
+  m_w: number;
+  m_z: number;
+  mask: number;
+
+  constructor() {
+    this.m_w = 123456789;
+    this.m_z = 987654321;
+    this.mask = 0xffffffff;
+  }
+
+  setSeed(seed: number) {
+    this.m_w = (123456789 + seed) & this.mask;
+    this.m_z = (987654321 - seed) & this.mask;
+  }
+
+  nextValue() {
+    this.m_z = (36969 * (this.m_z & 65535) + (this.m_z >> 16)) & this.mask;
+    this.m_w = (18000 * (this.m_w & 65535) + (this.m_w >> 16)) & this.mask;
+    let result = ((this.m_z << 16) + (this.m_w & 65535)) >>> 0;
+    result /= 4294967296;
+    return result;
+  }
+}
+
+const randomGenerator = new SeedableRandomGenerator();
+
+function getRandomPlaybackRate(seed = 1.0) {
+  randomGenerator.setSeed(seed);
+  const random_playback_rate = 1.0 + AUDIO_PITCH_VARIATION * (2.0 * randomGenerator.nextValue() - 1.0);
+  return random_playback_rate;
 }
 
 class SoundPlayer {
@@ -47,11 +76,15 @@ class SoundPlayer {
     }
   }
 
-  play(volume: number): void {
+  play(volume: number, varyPitch: boolean, seed = 0.0): void {
     const player = this.available.pop();
     if (player) {
       player.volume = volume;
-      player.playbackRate = getRandomPlaybackRate();
+      if (varyPitch) {
+        player.playbackRate = getRandomPlaybackRate(seed);
+      } else {
+        player.playbackRate = 1.0;
+      }
       player.play();
     }
   }
@@ -87,9 +120,10 @@ export default class TypingSoundsPlugin extends Plugin {
           return;
         }
         if (event.code === "Enter") {
-          this.enterPlayer.play(this.settings.volume);
+          this.enterPlayer.play(this.settings.volume, false);
         } else {
-          this.keyPlayer.play(this.settings.volume);
+          const seed = parseInt(event.code.toUpperCase(), 36);
+          this.keyPlayer.play(this.settings.volume, true, seed);
         }
       }
     });
