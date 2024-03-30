@@ -140,7 +140,6 @@ class TypingSoundsSettingTab extends PluginSettingTab {
           .setLimits(0.0, 1.0, 0.05)
           .setValue(this.plugin.settings.volume)
           .onChange(async (value) => {
-            console.log("value", value);
             this.plugin.settings.volume = value;
             await this.plugin.saveSettings();
           })
