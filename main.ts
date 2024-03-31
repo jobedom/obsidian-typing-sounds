@@ -8,8 +8,8 @@ interface TypingSoundsPluginSettings {
 
 const SOUND_RELATIVE_PATH = "sounds";
 
-const AUDIO_PLAYER_COUNT = 10; // To avoid choking sounds by quick typists
-const AUDIO_PITCH_VARIATION = 0.05; // Very slightly change pitch of sounds
+const AUDIO_PLAYER_COUNT = 20;
+const AUDIO_PITCH_VARIATION = 0.05;
 
 const DEFAULT_SETTINGS: TypingSoundsPluginSettings = {
   muted: false,
@@ -93,11 +93,13 @@ class SoundPlayer {
 export default class TypingSoundsPlugin extends Plugin {
   settings: TypingSoundsPluginSettings;
   keyPlayer: SoundPlayer;
+  spacePlayer: SoundPlayer;
   enterPlayer: SoundPlayer;
 
   async onload() {
     this.addSettingTab(new TypingSoundsSettingTab(this.app, this));
     this.keyPlayer = new SoundPlayer(getPluginFilePath(this, `${SOUND_RELATIVE_PATH}/key.wav`));
+    this.spacePlayer = new SoundPlayer(getPluginFilePath(this, `${SOUND_RELATIVE_PATH}/space.wav`));
     this.enterPlayer = new SoundPlayer(getPluginFilePath(this, `${SOUND_RELATIVE_PATH}/enter.wav`));
 
     this.addCommand({
@@ -121,6 +123,8 @@ export default class TypingSoundsPlugin extends Plugin {
         }
         if (event.code === "Enter") {
           this.enterPlayer.play(this.settings.volume, false);
+        } else if (event.code === "Space" || event.code === "Backspace") {
+          this.spacePlayer.play(this.settings.volume, false);
         } else {
           const seed = parseInt(event.code.toUpperCase(), 36);
           this.keyPlayer.play(this.settings.volume, true, seed);
