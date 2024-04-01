@@ -10,6 +10,7 @@ const SOUND_RELATIVE_PATH = "sounds";
 
 const AUDIO_PLAYER_COUNT = 20;
 const AUDIO_PITCH_VARIATION = 0.05;
+const VOLUME_STEP = 0.1;
 
 const DEFAULT_SETTINGS: TypingSoundsPluginSettings = {
   muted: false,
@@ -103,11 +104,51 @@ export default class TypingSoundsPlugin extends Plugin {
     this.enterPlayer = new SoundPlayer(getPluginFilePath(this, `${SOUND_RELATIVE_PATH}/enter.wav`));
 
     this.addCommand({
-      id: "toggle-mute-typing-sounds",
-      name: "Toggle mute typing sounds",
+      id: "toggle-typing-sounds",
+      name: "Toggle typing sounds",
       callback: async () => {
         this.settings.muted = !this.settings.muted;
         await this.saveSettings();
+      },
+    });
+
+    this.addCommand({
+      id: "mute-typing-sounds",
+      name: "Mute typing sounds",
+      callback: async () => {
+        this.settings.muted = true;
+        await this.saveSettings();
+      },
+    });
+
+    this.addCommand({
+      id: "unmute-typing-sounds",
+      name: "Unmute typing sounds",
+      callback: async () => {
+        this.settings.muted = false;
+        await this.saveSettings();
+      },
+    });
+
+    this.addCommand({
+      id: "volume-up-typing-sounds",
+      name: "Volume up for typing sounds",
+      callback: async () => {
+        this.settings.volume += VOLUME_STEP;
+        if (this.settings.volume > 1.0) this.settings.volume = 1.0;
+        await this.saveSettings();
+        this.keyPlayer.play(this.settings.volume, false);
+      },
+    });
+
+    this.addCommand({
+      id: "volume-down-typing-sounds",
+      name: "Volume down for typing sounds",
+      callback: async () => {
+        this.settings.volume -= VOLUME_STEP;
+        if (this.settings.volume < 0.0) this.settings.volume = 0.0;
+        await this.saveSettings();
+        this.keyPlayer.play(this.settings.volume, false);
       },
     });
 
