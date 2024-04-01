@@ -1,6 +1,6 @@
 {
   "name": "obsidian-typing-sounds",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Make your typing sound like a typewriter.",
   "main": "main.js",
   "scripts": {
