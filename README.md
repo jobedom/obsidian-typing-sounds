@@ -18,6 +18,6 @@ You can follow one of the following methods:
 
 * Install from the community plugin registry under the name `Typing sounds`.
 * Install using [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) with repository `jobedom/obsidian-typing-sounds`
-* Install manually by copying the release files (`main.js` and `manifest.json`) to `.obsidian/plugins/obsidian-typing-sounds` in your vault, and the two WAV files (`key.wav` and `enter.wav`) to `.obsidian/plugins/obsidian-typing-sounds/sounds`.
+* Install manually by copying the release files (`main.js` and `manifest.json`) to `.obsidian/plugins/obsidian-typing-sounds` in your vault, and the three WAV files (`key.wav`, `space.wav` and `enter.wav`) to `.obsidian/plugins/obsidian-typing-sounds/sounds`.
 
 Enjoy your writing!
